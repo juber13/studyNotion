@@ -3,16 +3,40 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import cloudinary from 'cloudinary'
 import dotenv from 'dotenv'
+import errorHandler from './utils/errorMiddleware.js'
+
+import connectDb from './db.js'
 
 dotenv.config();
+
+
+// connect db 
+connectDb();
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // replace with your frontend URL
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({extended : true}))
 
+
+// import routers
+import userRouter from './routes/user.route.js'
+import courseRouter from './routes/course.route.js'
+
+app.use('/api/user' , userRouter);
+app.use('/api/course' , courseRouter);
+
+
+// error handling middleware
+app.use(errorHandler);  
 
 app.listen(PORT , () => {
     console.log(`Server is running at ${PORT} ✅`)
