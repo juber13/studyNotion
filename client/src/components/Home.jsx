@@ -1,6 +1,6 @@
 import React from 'react'
 import { BsArrowRight } from 'react-icons/bs'
-const Hero = () => {
+const Home = () => {
   return (
   <div className='main-section flex items-center justify-center w-full height'>
     <div className='hero-section gap-5 flex flex-col items-center justify-center max-w-2xl m-auto'>
@@ -27,4 +27,4 @@ const Hero = () => {
   );
 }
 
-export default Hero
+export default Home

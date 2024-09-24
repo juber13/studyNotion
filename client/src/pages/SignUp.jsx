@@ -1,26 +1,34 @@
 import React, { useState } from 'react'
 import toast from 'react-hot-toast'
 import axios from 'axios'
-
+import { useNavigate } from 'react-router-dom'
+import { useSelector , useDispatch } from 'react-redux'
+import { setUser , setError , setToken , setLoading } from '../store/userSlice'
 const SignUp = () => {
   const [userInfo , setUserInfo] = useState({name : "" , lastName : "" , email : "" , password : "" , phoneNumber : "" , confirmPassword : "" , role : ""});
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.user);
+  console.log(user);  
 
   const handleChange = (e) => {
     const {name , value} = e.target;
     setUserInfo({...userInfo , [name] : value});
   }
   
-  const handleLogin = async(e) => {
+  const handleSignUp = async(e) => {
     e.preventDefault();
     try{
       const res = await axios.post('http://localhost:5050/api/user/register' , userInfo);
-      toast.success(res.data.message)
+      console.log(res)
       Object.keys(userInfo).forEach(key => userInfo[key] = "");
-      console.log(res.data);
-
+      toast.success(res.data.message)
+      navigate('/login'); 
     }catch(err){
       toast.error(err.response.data.error , { style : {fontSize : "12px" }, duration : 1000 });
       console.log(err); 
+    }finally{
+      dispatch(setLoading(false));
     }
   }
 
@@ -33,7 +41,7 @@ const SignUp = () => {
             <h2 className='text-2xl'>Register</h2>
           </div>
 
-          <form className='flex flex-col gap-3' onSubmit={handleLogin}>
+          <form className='flex flex-col gap-3' onSubmit={handleSignUp}>
             <div className='role flex gap-2 mt-3'>
               <input
                 type='radio'

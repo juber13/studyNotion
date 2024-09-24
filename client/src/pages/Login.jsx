@@ -3,12 +3,18 @@ import { Link , useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
+import { useDispatch } from 'react-redux';
+import { setUser, setToken } from '../store/userSlice';
 const Login = () => {
   const [userInfo, setUserInfo] = React.useState({email: '',password: ''});
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
   const handleLogin = async() => {
      try{
        const res = await axios.post('http://localhost:5050/api/user/login',userInfo);
+       dispatch(setUser(res.data.data));
+       dispatch(setToken(res.data.data.token));
        toast.success('Login Successfully');
        Cookies.set('token', res.data.data.token);
        setUserInfo({email: '',password: ''});

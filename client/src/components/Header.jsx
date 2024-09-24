@@ -1,22 +1,22 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { BiCaretDown } from 'react-icons/bi'
 import { Link , useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import { useSelector , useDispatch } from 'react-redux';
+import {setLogout} from '../store/userSlice';
 const Header = () => {
   const [toggle ,setToggle] = useState(false);
-  const token = Cookies.get('token');
+  const {token}  = useSelector((state) => state.user);  
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    Cookies.remove('token');
-    navigate('/login');
-    
-  }
+
+  
   return (
     <div className='border p-3 flex items-center justify-between bg-gray-100'>
-      <div className='logo'>
-        <span className='text-blue-500 font-bold'>S</span>tudy
-        <span className='text-blue-500 font-bold'>N</span>otion
+      <div className='logo cursor-pointer' onClick={() => navigate('/')}>  
+      studyNotion
       </div>
 
       <div className='menu-center flex gap-4  text-black-500 font-semibold'>
@@ -74,7 +74,9 @@ const Header = () => {
           </Link>
         </div>
       ) : (
-        <button onClick={handleLogout}>Logout</button>
+        <Link to={'/dashboard'}>
+          <button className='border text-sm p-2 bg-white border-yellow-300 font-semibold rounded-md'>DashBoard</button>
+        </Link>
       )}
     </div>
   );
