@@ -9,7 +9,7 @@ import createHttpError from "http-errors";
 import { tokengenerator } from "../utils/token.js";
 
 // register user method post url[http://localhost:5000/user/register]
-const register = expressAsyncHandler(async (req, res, next) => {
+const register = asyncHandler(async (req, res, next) => {
   const { name, email, password, confirmPassword, role, lastName, phoneNumber } = req.body;
 
   if ([name, email, password, lastName, confirmPassword, phoneNumber, role].some((field) => field === "")) {
@@ -38,7 +38,7 @@ const register = expressAsyncHandler(async (req, res, next) => {
 
 
 // login user method post url[http://localhost:5000/user/login]
-const login = expressAsyncHandler(async (req, res, next) => {
+const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
   console.log(email, password);
 
@@ -46,9 +46,6 @@ const login = expressAsyncHandler(async (req, res, next) => {
   if ([email, password].some((field) => !field)) {
     return next(new ApiError(400, "All fields are required"));
   }
-
-//  find use with email or userName
-  // let user = await User.findOne({$or : [{userName} ,  {email}]})
 
   // Find user without excluding password
   let user = await User.findOne({ email });
@@ -75,8 +72,11 @@ const login = expressAsyncHandler(async (req, res, next) => {
    maxAge: 24 * 60 * 60 * 1000, // 24 hours
  };
 
+
+
   return res
     .status(200)
+    .cookie('token' , token , options)
     .json(new ApiResponse(200, {loggedInUser , token}, true, "Login Successfully"));
 });
 
@@ -86,10 +86,31 @@ const logoutUser = asyncHandler(async (req, res) => {
   return res.status(200).clearCookie("accessToken").json(
     new ApiResponse(200 , null , "User logout !")
   );
+})
+
+const editUserInfo  = asyncHandler(async(req, res) => {
+    const { data } = req.body;
+    console.log(data)
+
+    const user = await User.findByIdAndUpdate(req.user._id , 
+    {
+       $set : {
+          name,
+          phoneNumber
+       }
+       
+    }, {new : true , runValidators : true}
+    
+    ).select("-password -email -lastName")
+
+
+   return res.status(200).json(
+    new ApiResponse(200 , user , "User updated successfully")
+   ) 
 
 })
 
 
 
 
-export  {register , login , logoutUser}
+export  {register , login , logoutUser , editUserInfo}

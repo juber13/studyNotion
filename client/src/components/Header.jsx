@@ -6,7 +6,8 @@ import { useSelector , useDispatch } from 'react-redux';
 import {setLogout} from '../store/userSlice';
 const Header = () => {
   const [toggle ,setToggle] = useState(false);
-  const {token}  = useSelector((state) => state.user);  
+  // const {token}  = useSelector((state) => state.user); 
+  const token = Cookies.get("token") 
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
