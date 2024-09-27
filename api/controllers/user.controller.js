@@ -91,7 +91,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 const editUserInfo  = asyncHandler(async(req, res) => {
     const { data } = req.body;
     console.log(data)
-
+    
     const user = await User.findByIdAndUpdate(req.user._id , 
     {
        $set : {

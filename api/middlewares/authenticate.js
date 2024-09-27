@@ -19,6 +19,8 @@ const auth = async(req, _, next) => {
             throw new ApiError(401, "User not found");
         }
         req.user = user;
+
+
         next();
     } catch (error) {
         if (error instanceof jwt.JsonWebTokenError) {

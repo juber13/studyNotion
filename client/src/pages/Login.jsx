@@ -27,7 +27,7 @@ const Login = () => {
 
 
   return (
-    <div className='right border shadow-md flex flex-col gap-6 p-8 rounded-md text-xs max-w-sm m-auto mt-10'>
+    <div className='right border shadow-md flex  flex-col gap-6 p-8 rounded-md text-xs max-w-sm m-auto mt-40'>
           <div className=''>
             <h2 className='text-2xl font-bold'>Login</h2>
           </div>
