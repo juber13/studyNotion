@@ -1,18 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 
   const initialState = {
-    user: null,
+    data: null,
     loading: false,
     error: null,
-    token: null,
   };
 
   const userSlice = createSlice({
-    name: "user",
+    name: "userInfo",
     initialState,
     reducers: {
       setUser: (state, action) => {
-        state.user = action.payload;
+        state.data = action.payload;
       },
       setLoading: (state, action) => {
         state.loading = action.payload;
@@ -20,14 +19,10 @@ import { createSlice } from "@reduxjs/toolkit";
       setError: (state, action) => {
         state.error = action.payload;
       },
-      setToken: (state, action) => {
-        state.token = action.payload;
-      },
       setLogout: (state , action) => {
         state.user = null;
         state.loading = false;
         state.error = null;
-        state.token = action.payload;
       } 
     },
   });

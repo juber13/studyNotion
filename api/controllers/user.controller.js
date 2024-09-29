@@ -4,13 +4,22 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import expressAsyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
+// import cloudinary from 'cloudinary'
 // import token from "../utils/token.js";
+// const  cloudinary = require("cloudinary");
+
+import uploadImage  from "../utils/cloudinary.js";
 
 import { tokengenerator } from "../utils/token.js";
 
 // register user method post url[http://localhost:5000/user/register]
 const register = asyncHandler(async (req, res, next) => {
   const { name, email, password, confirmPassword, role, lastName, phoneNumber } = req.body;
+  const avatarLocalPath = req.file ? req.file : null;  
+
+  console.log(avatarLocalPath + "  " +"dasd");  
+
+
 
   if ([name, email, password, lastName, confirmPassword, phoneNumber, role].some((field) => field === "")) {
     return next(new ApiError(400, "All fields are required"));
@@ -24,12 +33,26 @@ const register = asyncHandler(async (req, res, next) => {
     return next(new ApiError(400, "Invalid email format"));
   }
 
+  
   const isUserExists = await User.findOne({ email });
   if (isUserExists) {
     return next(new ApiError(400, "User already exists"));
   }
 
-  const newUser = await User.create({ name, email, password, lastName, role, phoneNumber });
+
+    if (!avatarLocalPath) {
+      return next(new ApiError(400, "Avatar image is required"));
+    } 
+
+    const avatar = await uploadImage(avatarLocalPath);
+
+    if (!avatar) {
+      return next(new ApiError(400, "Failed to upload avatar image"));
+    }
+    
+    const avatarUrl = avatarCloudinary.url;
+
+  const newUser = await User.create({ name, email, password, lastName, role, phoneNumber , imageUrl: avatarUrl });
 
   return res.status(201).json(
     new ApiResponse(201, newUser, "User Registered Successfully")
@@ -71,13 +94,11 @@ const login = asyncHandler(async (req, res, next) => {
    sameSite: "lax", // Adjust based on your needs
    maxAge: 24 * 60 * 60 * 1000, // 24 hours
  };
-
-
-
+ 
   return res
     .status(200)
     .cookie('token' , token , options)
-    .json(new ApiResponse(200, {loggedInUser , token}, true, "Login Successfully"));
+    .json(new ApiResponse(200, loggedInUser, true, "Login Successfully"));
 });
 
 
@@ -90,13 +111,14 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 const editUserInfo  = asyncHandler(async(req, res) => {
     const { data } = req.body;
-    console.log(data)
-    
+    const {name , phoneNumber , lastName} = data;  
+
     const user = await User.findByIdAndUpdate(req.user._id , 
     {
        $set : {
           name,
-          phoneNumber
+          phoneNumber,
+          lastName
        }
        
     }, {new : true , runValidators : true}

@@ -20,7 +20,6 @@ const SignUp = () => {
     e.preventDefault();
     try{
       const res = await axios.post('http://localhost:5050/api/user/register' , userInfo);
-      console.log(res)
       Object.keys(userInfo).forEach(key => userInfo[key] = "");
       toast.success(res.data.message)
       navigate('/login'); 

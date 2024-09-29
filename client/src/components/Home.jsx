@@ -1,6 +1,12 @@
 import React from 'react'
 import { BsArrowRight } from 'react-icons/bs'
+import Cookies from 'js-cookie';
+import { useSelector } from 'react-redux';
 const Home = () => {
+  // const token = Cookies.get('token');
+  // console.log(token); 
+  const userInfo = useSelector((state) => state.user);
+  console.log(userInfo.user);
   return (
   <div className='main-section flex items-center justify-center w-full height'>
     <div className='hero-section gap-5 flex flex-col items-center justify-center max-w-2xl m-auto'>

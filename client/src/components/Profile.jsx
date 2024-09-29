@@ -1,19 +1,24 @@
 import React, { useState } from 'react'
 
 import toast from "react-hot-toast";
-import { setLoading } from "../store/userSlice";
+import { setLoading , setUser } from "../store/userSlice";
+import { useDispatch } from 'react-redux';
 import axios from "axios";
+axios.defaults.withCredentials = true;
+
 import { useSelector } from 'react-redux';
 
 const Profile = () => {
-    const { user } = useSelector((state) => state.user);
-    const { name, phoneNumber, isActive, email, role, lastName } = user.loggedInUser;
+    const  user  = useSelector((state) => state.user.data);
+    const { name, phoneNumber, isActive, email, role, lastName } = user;
     const [isEditMode, setIsEditMode] = useState(false);
     const [updatedInfo, setUpdatedInfo] = useState({
       name: "",
       phoneNumber: "",
       lastName: "",
     });
+
+    const dispatch = useDispatch();
 
     const handleChange = (e) => {
       const { name, value } = e.target;
@@ -28,10 +33,12 @@ const Profile = () => {
         const res = await axios.put(`http://localhost:5050/api/user/update`, {
           data: updatedInfo,
         });
-        console.log(res);
+        dispatch(setUser(res.data.data));
         toast.success("Profile Updated Successfully");
+        setIsEditMode(false); 
       } catch (error) {
         console.log(error);
+        toast.error(error.response.data.error);
       }
 
       console.log("update");
@@ -39,7 +46,7 @@ const Profile = () => {
 
   return (
     <>
-    {isEditMode ? (
+      {isEditMode ? (
         <div className='edit-from mt-20 border p-5 flex-start'>
           <div className='heading flex items-center justify-between w-full'>
             <h2 className='text-2xl ml-3 font-semibold'>Edit Profile</h2>
@@ -50,7 +57,10 @@ const Profile = () => {
               Cancel
             </div>
           </div>
-          <form className='grid grid-cols-2 gap-3 mt-10 p-3' onSubmit={handleUpdate}>
+          <form
+            className='grid grid-cols-2 gap-3 mt-10 p-3'
+            onSubmit={handleUpdate}
+          >
             <div className='flex flex-col gap-2'>
               <label htmlFor='lastName'>Profile Picture</label>
               <input
@@ -63,18 +73,6 @@ const Profile = () => {
             </div>
 
             <div className='flex flex-col gap-2'>
-              <label htmlFor='lastName'>LastName</label>
-              <input
-                type='text'
-                placeholder='lastName'
-                name='lastName'
-                className='p-1 border rounded-md'
-                value={updatedInfo.lastName}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className='flex flex-col gap-2'>
               <label htmlFor='lastName'>Name</label>
               <input
                 type='text'
@@ -82,6 +80,18 @@ const Profile = () => {
                 name='name'
                 className='p-1 border rounded-md'
                 value={updatedInfo.name}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className='flex flex-col gap-2'>
+              <label htmlFor='lastName'>LastName</label>
+              <input
+                type='text'
+                placeholder='lastName'
+                name='lastName'
+                className='p-1 border rounded-md'
+                value={updatedInfo.lastName}
                 onChange={handleChange}
               />
             </div>
@@ -159,7 +169,7 @@ const Profile = () => {
         </div>
       )}
     </>
-  )
+  );
 }
 
 export default Profile
